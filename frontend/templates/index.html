@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Lite - Employee Management System</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --sidebar-width: 250px;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .sidebar .brand {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 2rem;
+        }
+
+        .sidebar .brand h4 {
+            color: white;
+            font-weight: 700;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .sidebar .brand p {
+            color: rgba(255,255,255,0.8);
+            margin: 0.25rem 0 0;
+            font-size: 0.875rem;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.875rem 1.5rem;
+            margin: 0.25rem 0;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border-left-color: white;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #212529;
+        }
+
+        .page-header p {
+            margin: 0.5rem 0 0;
+            color: #6c757d;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-card h5 {
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #212529;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            color: #495057;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .badge {
+            padding: 0.5rem 0.875rem;
+            font-weight: 500;
+            border-radius: 6px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #dee2e6;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h5 {
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            padding: 0.625rem 0.875rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                overflow: hidden;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">
+            <h4><i class="bi bi-people-fill"></i> HRMS Lite</h4>
+            <p>Employee Management</p>
+        </div>
+        <nav class="nav flex-column">
+            <a class="nav-link active" href="#" data-page="employees">
+                <i class="bi bi-person-badge"></i>
+                <span>Employees</span>
+            </a>
+            <a class="nav-link" href="#" data-page="attendance">
+                <i class="bi bi-calendar-check"></i>
+                <span>Attendance</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Employees Page -->
+        <div id="employees-page">
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1><i class="bi bi-person-badge"></i> Employee Management</h1>
+                        <p>Manage your employee records</p>
+                    </div>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+                        <i class="bi bi-plus-circle"></i> Add Employee
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h5><i class="bi bi-people"></i> All Employees</h5>
+                
+                <div id="employees-loading" class="loading" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Loading employees...</p>
+                </div>
+
+                <div id="employees-error" class="alert alert-danger" style="display: none;"></div>
+
+                <div id="employees-empty" class="empty-state" style="display: none;">
+                    <i class="bi bi-inbox"></i>
+                    <h5>No Employees Found</h5>
+                    <p>Get started by adding your first employee</p>
+                </div>
+
+                <div id="employees-table-container" style="display: none;">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Employee ID</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Department</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employees-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Page -->
+        <div id="attendance-page" style="display: none;">
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1><i class="bi bi-calendar-check"></i> Attendance Management</h1>
+                        <p>Track daily employee attendance</p>
+                    </div>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAttendanceModal">
+                        <i class="bi bi-plus-circle"></i> Mark Attendance
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5><i class="bi bi-list-check"></i> Attendance Records</h5>
+                    <div class="d-flex gap-2">
+                    <select id="filter-employee" class="form-select" style="width: auto;">
+                        <option value="">All Employees</option>
+                    </select>
+
+                    <input type="date" id="filter-date" class="form-control" style="width: auto;">
+                </div>
+
+                </div>
+                
+                <div id="attendance-loading" class="loading" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Loading attendance records...</p>
+                </div>
+
+                <div id="attendance-error" class="alert alert-danger" style="display: none;"></div>
+
+                <div id="attendance-empty" class="empty-state" style="display: none;">
+                    <i class="bi bi-inbox"></i>
+                    <h5>No Attendance Records Found</h5>
+                    <p>Start tracking attendance by marking your first record</p>
+                </div>
+
+                <div id="attendance-summary" class="mb-3 fw-bold text-success"></div>
+                <div id="attendance-table-container" style="display: none;">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Employee ID</th>
+                                    <th>Employee Name</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Employee Modal -->
+    <div class="modal fade" id="addEmployeeModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-person-plus"></i> Add New Employee</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-employee-form">
+                        <div class="mb-3">
+                            <label class="form-label">Employee ID <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="employee-id" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="employee-name" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="employee-email" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Department <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="employee-department" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div id="add-employee-error" class="alert alert-danger" style="display: none;"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-employee-btn">
+                        <i class="bi bi-check-circle"></i> Add Employee
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Attendance Modal -->
+    <div class="modal fade" id="addAttendanceModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-calendar-plus"></i> Mark Attendance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-attendance-form">
+                        <div class="mb-3">
+                            <label class="form-label">Employee <span class="text-danger">*</span></label>
+                            <select class="form-select" id="attendance-employee" required>
+                                <option value="">Select Employee</option>
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="attendance-date" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status <span class="text-danger">*</span></label>
+                            <select class="form-select" id="attendance-status" required>
+                                <option value="">Select Status</option>
+                                <option value="Present">Present</option>
+                                <option value="Absent">Absent</option>
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div id="add-attendance-error" class="alert alert-danger" style="display: none;"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-attendance-btn">
+                        <i class="bi bi-check-circle"></i> Save Attendance
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // API Base URL - change this for production
+        const API_BASE_URL = window.location.origin + '/api';
+
+        // Current page state
+        let currentPage = 'employees';
+        let employees = [];
+        let attendance = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default
+            document.getElementById('filter-date').addEventListener('change', filterAttendance);
+
+            document.getElementById('attendance-date').valueAsDate = new Date();
+            
+            // Navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.dataset.page;
+                    switchPage(page);
+                });
+            });
+
+            // Form submissions
+            document.getElementById('save-employee-btn').addEventListener('click', saveEmployee);
+            document.getElementById('save-attendance-btn').addEventListener('click', saveAttendance);
+
+            // Filter
+            document.getElementById('filter-employee').addEventListener('change', filterAttendance);
+
+            const hashPage = window.location.hash.replace('#', '') || 'employees';
+            switchPage(hashPage);
+        });
+
+        // Page switching
+        function switchPage(page) {
+            // Save current page in URL hash
+            window.location.hash = page;
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[data-page="${page}"]`).classList.add('active');
+
+            document.getElementById('employees-page').style.display = page === 'employees' ? 'block' : 'none';
+            document.getElementById('attendance-page').style.display = page === 'attendance' ? 'block' : 'none';
+
+            currentPage = page;
+
+            if (page === 'employees') {
+                loadEmployees();
+            } else if (page === 'attendance') {
+                loadEmployeesForDropdowns();
+                loadAttendance();
+            }
+        }
+
+
+        // Load employees
+        async function loadEmployees() {
+            showLoading('employees');
+            hideError('employees');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/employees/`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load employees');
+                }
+
+                employees = await response.json();
+                displayEmployees(employees);
+            } catch (error) {
+                showError('employees', error.message);
+            }
+        }
+
+        // Display employees
+        function displayEmployees(data) {
+            hideLoading('employees');
+            
+            if (data.length === 0) {
+                document.getElementById('employees-empty').style.display = 'block';
+                document.getElementById('employees-table-container').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('employees-empty').style.display = 'none';
+            document.getElementById('employees-table-container').style.display = 'block';
+
+            const tbody = document.getElementById('employees-table-body');
+            tbody.innerHTML = data.map(emp => `
+                <tr>
+                    <td><strong>${escapeHtml(emp.employee_id)}</strong></td>
+                    <td>${escapeHtml(emp.full_name)}</td>
+                    <td>${escapeHtml(emp.email)}</td>
+                    <td><span class="badge bg-primary">${escapeHtml(emp.department)}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${emp.id})">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Save employee
+        async function saveEmployee() {
+            clearFormErrors('add-employee-form');
+            hideError('add-employee');
+
+            const employeeData = {
+                employee_id: document.getElementById('employee-id').value.trim(),
+                full_name: document.getElementById('employee-name').value.trim(),
+                email: document.getElementById('employee-email').value.trim(),
+                department: document.getElementById('employee-department').value.trim()
+            };
+
+            const saveBtn = document.getElementById('save-employee-btn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/employees/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(employeeData)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    if (data.employee_id || data.email || data.full_name || data.department) {
+                        showFormErrors('add-employee-form', data);
+                    } else {
+                        showError('add-employee', data.error || 'Failed to add employee');
+                    }
+                    return;
+                }
+
+                // Success
+                bootstrap.Modal.getInstance(document.getElementById('addEmployeeModal')).hide();
+                document.getElementById('add-employee-form').reset();
+                loadEmployees();
+                showToast('Employee added successfully!', 'success');
+
+            } catch (error) {
+                showError('add-employee', error.message);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="bi bi-check-circle"></i> Add Employee';
+            }
+        }
+
+        // Delete employee
+        async function deleteEmployee(id) {
+            if (!confirm('Are you sure you want to delete this employee? This will also delete all their attendance records.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/employees/${id}/`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete employee');
+                }
+
+                loadEmployees();
+                showToast('Employee deleted successfully!', 'success');
+            } catch (error) {
+                showToast(error.message, 'danger');
+            }
+        }
+
+        // Load attendance
+        async function loadAttendance() {
+            showLoading('attendance');
+            hideError('attendance');
+
+            try {
+                const employeeFilter = document.getElementById('filter-employee').value;
+                const dateFilter = document.getElementById('filter-date').value;
+
+                const params = new URLSearchParams();
+
+                if (employeeFilter) {
+                    params.append('employee_id', employeeFilter);
+                }
+
+                if (dateFilter) {
+                    params.append('date', dateFilter);
+                }
+
+                const url = `${API_BASE_URL}/attendance/?${params.toString()}`;
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error('Failed to load attendance');
+                }
+
+                attendance = await response.json();
+                displayAttendance(attendance);
+
+            } catch (error) {
+                showError('attendance', error.message);
+            }
+        }
+
+
+
+        // Display attendance
+        function displayAttendance(data) {
+            hideLoading('attendance');
+
+            const presentCount = data.filter(att => att.status === 'Present').length;
+            document.getElementById('attendance-summary').innerHTML =
+                `<strong>Total Present Days:</strong> ${presentCount}`;
+            
+            if (data.length === 0) {
+                document.getElementById('attendance-empty').style.display = 'block';
+                document.getElementById('attendance-table-container').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('attendance-empty').style.display = 'none';
+            document.getElementById('attendance-table-container').style.display = 'block';
+
+            const tbody = document.getElementById('attendance-table-body');
+            tbody.innerHTML = data.map(att => `
+                <tr>
+                    <td><strong>${escapeHtml(att.employee_id_display)}</strong></td>
+                    <td>${escapeHtml(att.employee_name)}</td>
+                    <td>${formatDate(att.date)}</td>
+                    <td>
+                        <span class="badge ${att.status === 'Present' ? 'bg-success' : 'bg-danger'}">
+                            ${att.status}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="deleteAttendance(${att.id})">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Load employees for dropdowns
+        async function loadEmployeesForDropdowns() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/employees/`);
+                const data = await response.json();
+
+                // Populate attendance employee dropdown
+                const attendanceSelect = document.getElementById('attendance-employee');
+                attendanceSelect.innerHTML = '<option value="">Select Employee</option>' +
+                    data.map(emp => `<option value="${emp.id}">${escapeHtml(emp.employee_id)} - ${escapeHtml(emp.full_name)}</option>`).join('');
+
+                // Populate filter dropdown
+                const filterSelect = document.getElementById('filter-employee');
+                filterSelect.innerHTML = '<option value="">All Employees</option>' +
+                    data.map(emp => `<option value="${emp.id}">${escapeHtml(emp.employee_id)} - ${escapeHtml(emp.full_name)}</option>`).join('');
+
+            } catch (error) {
+                console.error('Error loading employees for dropdowns:', error);
+            }
+        }
+
+        // Save attendance
+        async function saveAttendance() {
+            clearFormErrors('add-attendance-form');
+            hideError('add-attendance');
+
+            const attendanceData = {
+                employee: document.getElementById('attendance-employee').value,
+                date: document.getElementById('attendance-date').value,
+                status: document.getElementById('attendance-status').value
+            };
+
+            if (!attendanceData.employee || !attendanceData.date || !attendanceData.status) {
+                showError('add-attendance', 'Please fill in all required fields');
+                return;
+            }
+
+            const saveBtn = document.getElementById('save-attendance-btn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/attendance/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(attendanceData)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    if (data.non_field_errors) {
+                        showError('add-attendance', data.non_field_errors[0]);
+                    }
+
+                    else if (data.employee || data.date || data.status) {
+                        showFormErrors('add-attendance-form', data);
+                    }
+                    else {
+                        showError('add-attendance', data.error || 'Failed to save attendance');
+                    }
+
+                    return;
+                }
+
+                // Success
+                bootstrap.Modal.getInstance(document.getElementById('addAttendanceModal')).hide();
+                document.getElementById('add-attendance-form').reset();
+                document.getElementById('attendance-date').valueAsDate = new Date();
+                loadAttendance();
+                showToast('Attendance marked successfully!', 'success');
+
+            } catch (error) {
+                showError('add-attendance', error.message);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="bi bi-check-circle"></i> Save Attendance';
+            }
+        }
+
+        // Delete attendance
+        async function deleteAttendance(id) {
+            if (!confirm('Are you sure you want to delete this attendance record?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/attendance/${id}/`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete attendance');
+                }
+
+                loadAttendance();
+                showToast('Attendance deleted successfully!', 'success');
+            } catch (error) {
+                showToast(error.message, 'danger');
+            }
+        }
+
+        // Filter attendance
+        function filterAttendance() {
+            loadAttendance();
+        }
+
+        // Utility functions
+        function showLoading(section) {
+            const loadingDiv = document.getElementById(`${section}-loading`);
+            const tableDiv = document.getElementById(`${section}-table-container`);
+            const emptyDiv = document.getElementById(`${section}-empty`);
+
+            if (loadingDiv) loadingDiv.style.display = 'block';
+            if (tableDiv) tableDiv.style.display = 'none';
+            if (emptyDiv) emptyDiv.style.display = 'none';
+        }
+
+
+        function hideLoading(section) {
+            const loadingDiv = document.getElementById(`${section}-loading`);
+            if (!loadingDiv) return;
+            loadingDiv.style.display = 'none';
+        }
+
+
+        function showError(section, message) {
+            const errorDiv = document.getElementById(`${section}-error`);
+            if (!errorDiv) return; 
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            hideLoading(section);
+        }
+
+
+        function hideError(section) {
+            const errorDiv = document.getElementById(`${section}-error`);
+            if (!errorDiv) return;
+            errorDiv.style.display = 'none';
+        }
+
+        function showFormErrors(formId, errors) {
+            const form = document.getElementById(formId);
+            
+            Object.keys(errors).forEach(field => {
+                let inputId = '';
+                if (field === 'employee_id') inputId = 'employee-id';
+                else if (field === 'full_name') inputId = 'employee-name';
+                else if (field === 'email') inputId = 'employee-email';
+                else if (field === 'department') inputId = 'employee-department';
+                else if (field === 'employee') inputId = 'attendance-employee';
+                else if (field === 'date') inputId = 'attendance-date';
+                else if (field === 'status') inputId = 'attendance-status';
+
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.classList.add('is-invalid');
+                    const feedback = input.nextElementSibling;
+                    if (feedback && feedback.classList.contains('invalid-feedback')) {
+                        feedback.textContent = Array.isArray(errors[field]) ? errors[field][0] : errors[field];
+                    }
+                }
+            });
+        }
+
+        function clearFormErrors(formId) {
+            const form = document.getElementById(formId);
+            form.querySelectorAll('.is-invalid').forEach(input => {
+                input.classList.remove('is-invalid');
+            });
+        }
+
+        function showToast(message, type) {
+            // Simple alert for now - you can enhance this with a toast library
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
