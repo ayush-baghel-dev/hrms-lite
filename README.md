@@ -4,8 +4,8 @@ A lightweight web application for managing employee records and tracking attenda
 
 ## Live Demo
 
-- **Application URL**: [Add your deployed URL here]
-- **GitHub Repository**: [Add your repo URL here]
+- **Application URL**: https://hrms-lite-voey.onrender.com/
+- **GitHub Repository**: https://github.com/ayush-baghel-dev/hrms-lite
 
 ## Tech Stack
 
@@ -38,7 +38,7 @@ A lightweight web application for managing employee records and tracking attenda
 
 1. **Clone and navigate to project:**
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/ayush-baghel-dev/hrms-lite.git
 cd hrms-lite
 ```
 
